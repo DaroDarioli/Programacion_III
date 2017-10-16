@@ -1,0 +1,49 @@
+1- SELECT * FROM productos ORDER BY pNombre ASC;
+
+2- SELECT * FROM `proveedores` WHERE Localidad = "Quilmes";
+
+3- SELECT * FROM `envios` WHERE Cantidad >200 AND Cantidad <=300
+
+4- SELECT SUM(Cantidad) FROM envios
+
+5- SELECT * FROM `envios` LIMIT 3
+
+6 - SELECT P.pNombre,PP.Nombre FROM `productos` as P , `proveedores` as PP, envios as E WHERE PP.Numero=E.Numero AND P.pNumero=E.pNumero
+
+7 - SELECT (envios.Cantidad * productos.Precio) FROM envios INNER JOIN productos ON envios.pNumero=productos.pNumero
+
+8 - SELECT Cantidad FROM envios WHERE envios.pNumero = 1 AND envios.Numero = 102
+
+9 - SELECT envios.pNumero FROM envios INNER JOIN proveedores WHERE envios.Numero = proveedores.Numero AND proveedores.Localidad = "Avellaneda"
+
+10 - SELECT proveedores.Domicilio, proveedores.Localidad FROM `proveedores` WHERE proveedores.Nombre LIKE '%i%'
+
+11- INSERT INTO `productos`(`pNumero`, `pNombre`, `Precio`, `Tamaño`) VALUES (4,"Chocolate",97.50,"Chico")
+
+15 - UPDATE productos as P INNER JOIN envios AS E SET P.Tamaño = "Mediano" WHERE P.pNumero = E.pNumero AND E.Cantidad >= 300
+
+//##############
+1. Obtener los detalles completos de todos los productos, ordenados alfabéticamente.
+2. Obtener los detalles completos de todos los proveedores de ‘Quilmes’.
+3. Obtener todos los envíos en los cuales la cantidad este entre 200 y 300 inclusive.
+4. Obtener la cantidad total de todos los productos enviados.
+5. Mostrar los primeros 3 números de productos que se han enviado.
+6. Mostrar los nombres de proveedores y los nombres de los productos enviados.
+7. Indicar el monto (cantidad * precio) de todos los envíos.
+8. Obtener la cantidad total del producto 1 enviado por el proveedor 102.
+9. Obtener todos los números de los productos suministrados por algún proveedor de
+‘Avellaneda’.
+10. Obtener los domicilios y localidades de los proveedores cuyos nombres contengan la
+letra ‘I’.
+11. Agregar el producto numero 4, llamado ‘Chocolate’, de tamaño chico y con un precio
+de 25,35.
+12. Insertar un nuevo proveedor (únicamente con los campos obligatorios).
+13. Insertar un nuevo proveedor (107), donde el nombre y la localidad son ‘Rosales’ y ‘La
+Plata’.
+14. Cambiar los precios de los productos de tamaño ‘grande’ a 97,50.
+15. Cambiar el tamaño de ‘Chico’ a ‘Mediano’ de todos los productos cuyas cantidades
+sean mayores a 300 inclusive.
+16. Eliminar el producto número 1.
+17. Eliminar a todos los proveedores que no han enviado productos.
+
+SELECT P.pNombre,PP.Nombre FROM `productos` as P , `proveedores` as PP WHERE PP.Numero=Numero and P.pNumero=pNumero
