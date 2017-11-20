@@ -1,0 +1,146 @@
+
+        #tablaUsuarios {
+            background-color: green;
+            border-color: black;
+            border: 5px;
+        }
+
+
+        .error{
+            border-color: red;
+        }
+        
+        
+        .itsOk{
+            border-color: blue;
+        }
+
+
+    /*__________________________*/
+
+    #modulo{
+        
+            padding: 10px 10px;
+            width: 35%;
+            height: 300px;
+            margin: 20px 200px;
+            background-color:rgb(59, 98, 29);
+            text-align: center;
+            border-width: 10px;
+            border-color: black;
+            border-radius: 20%;
+        }
+        
+        #noticia{
+            width: 100px;
+            height: 100px;    
+        }
+        
+        
+        #ingresoPatente{
+            padding: 20px 50px;
+            border-radius:20%;
+            text-align:left;
+            position: fixed;
+            float: center;
+            width:350px;
+            height:300px;
+            background-color:rgba(23, 66, 127, 1);
+            top: 0px;
+            left: 0px;
+            display:none;
+
+        }
+
+        #ingresoAutos{
+            padding: 20px 50px;
+            border-radius:20%;
+            text-align:left;
+            position: fixed;
+            float: center;
+            width:350px;
+            height:300px;
+            background-color:rgba(23, 66, 127, 1);
+            top: 0px;
+            left: 0px;
+            display:none;
+
+        }
+
+        #popup{
+            padding: 20px 50px;
+            border-radius:20%;
+            text-align:left;
+            position: fixed;
+            float: right;
+            width:250px;
+            height:400px;
+            background-color:rgba(59, 98, 29, 0.90);
+            top: 0px;
+            left: 0px;
+            display:none;
+            
+        }
+        
+        .btnForm{
+        
+            background-color: #3D3DA0;
+            border-radius: 20%;
+            width:50px;
+            height:30px;
+            text-align: center;
+        
+        }
+        
+        .btnForm:hover {
+            background-color: hsl(245, 74%, 25%);
+            color: white;
+            width:53px;
+            height:33px;
+        }
+        
+        .btnGrande{
+        
+            background-color: #3D3DA0;
+            border-radius: 15%;
+            width:100px;
+            height:30px;
+            text-align: center;    
+        }
+        
+        
+        .btnGrande:hover {
+            background-color: hsl(245, 74%, 25%); 
+            color: white;
+            width:103px;
+            height:33px;
+        }
+        
+        
+        .ingreso{
+            padding: 10px 10px;  
+            text-align: center;
+        }
+        
+        
+        .error{
+            border-color: red;
+        }
+        
+        .itsOk{
+            border-color:none;
+        }
+        
+        body{
+            background-color: grey;
+        }
+        
+        #ventana{
+            position: absolute;
+            width:80%;    
+            background-color:rgba(6, 103, 25, 0.80);
+            top: 0px;
+            left: 0px;
+            display:none;
+        
+        }
