@@ -1,0 +1,17 @@
+Consigna:
+
+BicicletaCarga: por get, color, marca, precio, tipo; se guarda en bicicletas.txt
+
+Consulta Bicicleta: se ingresa tipo y color, se informa si hay dos o uno
+
+Alta venta: se recibe mail comprador, color tipo y cantidad; sacar de stock
+
+Alta venta con imagen; guardar con fecha
+
+Tabla ventas;
+
+Modificación bicicletas
+
+borrar bicicletas
+
+Listado de borradas y no borradas
