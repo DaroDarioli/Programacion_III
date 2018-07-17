@@ -19,38 +19,83 @@ $config['addContentLengthHeader'] = false;
 
 $app = new \Slim\App(["settings" => $config]);
 
+$app->group('/empleado', function () {
+  
+    //    $this->get('/login',\empleadoApi::class . ':TraerEmpleados')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
+    
+    $this->post('/alta',\empleadoApi::class . ':CargarEmpleado'); 
+    
+    $this->post('/login',\empleadoApi::class . ':TraerUnEmpleado');
+
+    $this->get('/listado',\empleadoApi::class . ':TraerEmpleados'); 
+    
+    $this->put('/modificar',\empleadoApi::class . ':ModificarEmpleado'); 
+    
+    $this->delete('/login/{id}',\empleadoApi::class . ':BorrarEmpleado')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
+     
+         
+    });
+
+
+    $app->group('/producto', function () {
+  
+        //    $this->get('/login',\empleadoApi::class . ':TraerEmpleados')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
+        
+           $this->post('/cargar',\productoApi::class . ':CargarProducto');
+    
+        //    $this->get('/listado',\empleadoApi::class . ':TraerEmpleados'); 
+        
+        //    $this->post('/alta',\empleadoApi::class . ':CargarEmpleado'); 
+        
+        //    $this->put('/login',\empleadoApi::class . ':ModificarEmpleado'); 
+        
+        //    $this->delete('/login/{mail}', \empleadoApi::class . ':BorrarEmpleado')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
+         
+             
+        });
+
+
+
+$app->get('/crearToken/', function (Request $request, Response $response) {
+  
+      $datos = $request->getParams('nombre','mail','clave','perfil');
+      $vMail = $datos['mail'];
+      $var = empleado::TraerUno($vMail);      
+      
+      if($var != null){
+
+          $token= AutentificadorJWT::CrearToken($datos); 
+          $newResponse = $response->withJson($token, 200); 
+          return $newResponse;
+      }
+      else{
+
+          return "No se puede crar token a empleado inexistente";
+      }
+ });
  
 
 //_____________________________________Empleado____________//
 
-$app->group('/empleado', function () {
+
+//->add(\AutentificadorMW::class . ':VerificarUsuario')->add(\MWparaCORS::class . ':HabilitarCORS8080');
+
+//_____________________________________Auto____________//
+
+$app->group('/auto', function () {   
   
-   $this->get('/',\empleadoApi::class . ':TraerEmpleados')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
-
-   $this->post('/email/clave/',\empleadoApi::class . ':TraerUnEmpleado');
-
-   $this->post('/Login',\empleadoApi::class . ':ValidarEmpleado');
-
-   $this->post('/',\empleadoApi::class . ':CargarEmpleado'); 
-
- 
-     
-});
-
-//_____________________________________Producto____________//
-
-$app->group('/producto', function () {   
-  
-    $this->post('/',\productoApi::class .':CargarProducto');
-    
-    $this->get('/', \productoApi::class . ':TraerProductos')->add(\MWparaCORS::class . ':HabilitarCORSTodos'); 
+  // $this->get('/', \autoApi::class . ':TraerAutos')->add(\MWparaCORS::class . ':HabilitarCORSTodos');  
    
-    $this->put('/{id}',\productoApi::class .':ModificarProducto');
-   
-    $this->delete('/{id}', \productoApi::class . ':BorrarProducto');
-     
+   $this->get('/', \autoApi::class . ':TraerUnAuto');  
+
+   $this->post('/',\autoApi::class .':CargarAuto');
+
+   $this->put('/{patente}',\autoApi::class .':ModificarAuto');
+
+   $this->delete('/', \autoApi::class . ':RetirarAuto');
   
-  })->add(\AutentificadorMW::class . ':VerificarUsuario')->add(\MWparaCORS::class . ':HabilitarCORS8080')->add(\MWparaCORS::class . ':HabilitarCORS8080');
+  
+  })->add(\AutentificadorMW::class . ':VerificarAcceso')->add(\MWparaCORS::class . ':HabilitarCORSTodos');
 
 
 /*_______________________________________________________________________*/

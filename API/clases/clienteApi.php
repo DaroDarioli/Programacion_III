@@ -2,83 +2,72 @@
 
 require_once 'AccesoDatos.php';
 require_once 'TableRows.php';
-require_once 'producto.php';
+require_once 'cliente.php';
 
-class productoApi extends producto
+class clienteApi extends cliente
 {   
-    public function CargarProducto($request,$response,$args){
+    public function CargarElemento($request,$response,$args){
+              
+        $miCliente = new cliente();
+        $ArrayDeParametros = $request->getParsedBody();                     
+        $miCliente->id_cliente = $ArrayDeParametros['id_cliente'];
+        $miCliente->nombre_completo = $ArrayDeParametros['nombre_completo'];
+                
+        $var = cliente::TraerUno($miCliente->id_cliente);             
         
-        $miProducto = new producto();
-        $ArrayDeParametros = $request->getParsedBody(); 
-
-        $miProducto->id_producto = $ArrayDeParametros['id_producto'];
-        $miProducto->nombre_producto = $ArrayDeParametros['nombre_producto'];
-        $miProducto->descripcion = $ArrayDeParametros['descripcion']; 
-        $miProducto->id_cocina = $ArrayDeParametros['id_cocina']; 
-        $miProducto->precio = $ArrayDeParametros['precio']; 
-        
-        $var = producto::TraerUno($miProducto->nombre_producto);             
-        
-        if($var == null){               
-            return $miProducto->Insertar();
+        if($var == null){
+                    
+            $arrayConToken = $request->getHeader('token');        
+            $token = $arrayConToken[0];
+            $payload=AutentificadorJWT::ObtenerData($token);
+            
+            return $miMesa->Insertar();
         }
         else{
             return $response->withJson(false, 200);            
-        } 
+        }
+    
     }
     
-    public function TraerProductos($request, $response, $args) {
-     //  auto::ImprimirListado();
-        $Productos=producto::TraerTodos();        
-        $newResponse = $response->withJson($Productos, 200); 
+    public function TraerUnElemento($request, $response, $args) {
+        
+        $vector  = $request->getParams('id_cliente');       
+        $vId = $vector['id_cliente'];         
+        
+        $elElemento = cliente::TraerUno($vId);
+        $newResponse = $response->withJson($elElemento, 200);  
         return $newResponse;
     }
 
-    public function TraerUnProducto($request, $response, $args) {
-        
-        $vector  = $request->getParams('id_producto');       
-        $vId = $vector['id_producto'];         
-        
-        $elProducto = auto::TraerUno($vId);
-        $newResponse = $response->withJson($elProducto, 200);  
-        return $newResponse;
-    }
-
-    public function ModificarProducto($request, $response, $args)
+    public function ModificarElemento($request, $response,$args)
     {
-        $vProducto = new producto();
-        $vid = $args['id_producto'];
+        $vCliente = new cliente();
+        $vId = $args['id_cliente'];
 
-        $vector  = $request->getParams('nombre_producto','descripcion','id_cocina','precio');
+        $vector  = $request->getParams('nombre_completo');
         
-        $vProducto->patente = $vPatente;
-        $vProducto->nombre_producto = $vector['nombre_producto'];
-        $vProducto->descripcion = $vector['descripcion'];
-        $vProducto->id_cocina = $vector['id_cocina'];
-        $vProducto->precio = $vector['precio'];
-            
-
-        //____________________//
-	   	$resultado =$vProducto->Modificar();
+        $vCliente->id_cliente = $vId;
+        $vCliente->nombre_completo = $vector['nombre_completo'];
+                    
+	   	$resultado = $vCliente->Modificar();
 	  	$responseObj= new stdclass();
 	    $responseObj->resultado=$resultado;
         $responseObj->tarea="modificar";
 	    return $response->withJson($responseObj, 200);	
     }
-   
-    public function BorrarProducto($request, $response, $args) {
+
+
+    public function BorrarElemento($request, $response, $args) {
     
-        $vProducto = new producto();
-        $vId = $args['id_producto'];
-        $var = pructo::TraerUno($vId);
+        $vCliente = new cliente();
+        $vId = $args['id_cliente'];
+        $var = cliente::TraerUno($vId);
         
         if($var != null){
                
-            $vProducto = $var[0];       
-            $borrar = $vProducto->foto;  
-            if(copy($borrar,"./Eliminados/".$vProducto->nombre_producto.'.jpg'))  unlink($borrar);
+            $vCliente = $var[0];       
             
-            $cantidadDeBorrados=$vProducto->BorrarUno(); 
+            $cantidadDeBorrados = $vCliente->BorrarUno(); 
 
             $objDelaRespuesta= new stdclass();
             $objDelaRespuesta->cantidad=$cantidadDeBorrados;
@@ -94,10 +83,9 @@ class productoApi extends producto
         }
         else{
 
-            return "No existe ningún producto con ese código de identificación";
+            return "No existe ningún elemento con ese código";
         }
     }
-
 
 
     // public function RetirarAuto($request, $response, $args) {
@@ -138,8 +126,6 @@ class productoApi extends producto
     //         return $newResponse; 
             
     //     }
-
-
 
 }
 

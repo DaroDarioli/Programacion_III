@@ -2,83 +2,97 @@
 
 require_once 'AccesoDatos.php';
 require_once 'TableRows.php';
-require_once 'producto.php';
+require_once 'mesa.php';
 
-class productoApi extends producto
+class mesaApi extends mesa
 {   
-    public function CargarProducto($request,$response,$args){
-        
-        $miProducto = new producto();
-        $ArrayDeParametros = $request->getParsedBody(); 
+    public function CargarMesa($request,$response,$args){
+              
 
-        $miProducto->id_producto = $ArrayDeParametros['id_producto'];
-        $miProducto->nombre_producto = $ArrayDeParametros['nombre_producto'];
-        $miProducto->descripcion = $ArrayDeParametros['descripcion']; 
-        $miProducto->id_cocina = $ArrayDeParametros['id_cocina']; 
-        $miProducto->precio = $ArrayDeParametros['precio']; 
+        $miMesa = new mesa();
+        $ArrayDeParametros = $request->getParsedBody();                     
+        $miMesa->id_mesa = $ArrayDeParametros['id_mesa'];
+        $miMesa->id_sector = $ArrayDeParametros['id_sector'];
+        $miMesa->id_estado_mesa = $ArrayDeParametros['id_estado_mesa']; 
         
-        $var = producto::TraerUno($miProducto->nombre_producto);             
+        $var = mesa::TraerUno($miMesa->id_mesa);             
         
-        if($var == null){               
-            return $miProducto->Insertar();
+        if($var == null){
+        
+        //_____________Tomo mail___________________________________//
+        $arrayConToken = $request->getHeader('token');        
+        $token = $arrayConToken[0];
+        $payload=AutentificadorJWT::ObtenerData($token);
+        //$miAuto->mailEmp = $payload->mail; 
+
+        //$miAuto->mailEmp = $args['mail']; 
+       
+        //_____________Cargo Foto___________________________________//
+
+      /*  $destino= './Fotos/';
+        $archivos = $request->getUploadedFiles();
+        $nombreAnterior=$archivos['foto']->getClientFilename();
+        $nombre = $miAuto->marca.$miAuto->patente;
+        $extension = explode(".",$nombreAnterior);
+        $extension = array_reverse($extension);
+        $archivos['foto']->moveTo($destino.$nombre.".".$extension[0]);
+        $camino = $destino.$nombre.".".$extension[0]; */
+
+        //________Cargo Auto________________________________________//        
+                
+       // $miAuto->foto = $camino;
+       // $miAuto->foto = 'falta';
+        return $miMesa->Insertar();
         }
         else{
             return $response->withJson(false, 200);            
         } 
     }
     
-    public function TraerProductos($request, $response, $args) {
-     //  auto::ImprimirListado();
-        $Productos=producto::TraerTodos();        
-        $newResponse = $response->withJson($Productos, 200); 
+    public function TraerUnElemento($request, $response, $args) {
+        
+        $vector  = $request->getParams('id_mesa');       
+        $vId = $vector['id_mesa'];         
+        
+        $laMesa = mesa::TraerUno($vId);
+        $newResponse = $response->withJson($laMesa, 200);  
         return $newResponse;
     }
 
-    public function TraerUnProducto($request, $response, $args) {
-        
-        $vector  = $request->getParams('id_producto');       
-        $vId = $vector['id_producto'];         
-        
-        $elProducto = auto::TraerUno($vId);
-        $newResponse = $response->withJson($elProducto, 200);  
-        return $newResponse;
-    }
-
-    public function ModificarProducto($request, $response, $args)
+    public function ModificarElemento($request, $response,$args)
     {
-        $vProducto = new producto();
-        $vid = $args['id_producto'];
+        $vMesa = new mesa();
+        $vId = $args['id_mesa'];
 
-        $vector  = $request->getParams('nombre_producto','descripcion','id_cocina','precio');
+        $vector  = $request->getParams('id_sector','id_estado_mesa');
         
-        $vProducto->patente = $vPatente;
-        $vProducto->nombre_producto = $vector['nombre_producto'];
-        $vProducto->descripcion = $vector['descripcion'];
-        $vProducto->id_cocina = $vector['id_cocina'];
-        $vProducto->precio = $vector['precio'];
+        $$vMesa->id_mesa = $vId;
+        $$vMesa->id_sector = $vector['id_sector'];
+        $$vMesa->id_estado_mesa = $vector['id_estado_mesa'];
             
 
         //____________________//
-	   	$resultado =$vProducto->Modificar();
+	   	$resultado =$vMesa->Modificar();
 	  	$responseObj= new stdclass();
 	    $responseObj->resultado=$resultado;
         $responseObj->tarea="modificar";
 	    return $response->withJson($responseObj, 200);	
     }
-   
-    public function BorrarProducto($request, $response, $args) {
+
+
+    public function BorrarElemento($request, $response, $args) {
     
-        $vProducto = new producto();
-        $vId = $args['id_producto'];
-        $var = pructo::TraerUno($vId);
+        $vMesa = new mesa();
+        $vId = $args['id_mesa'];
+        $var = mesa::TraerUno($vId);
         
         if($var != null){
                
-            $vProducto = $var[0];       
-            $borrar = $vProducto->foto;  
-            if(copy($borrar,"./Eliminados/".$vProducto->nombre_producto.'.jpg'))  unlink($borrar);
+            $vMesa = $var[0];       
+            // $borrar = $vAuto->foto;  
+            // if(copy($borrar,"./Eliminados/".$vAuto->patente.'.jpg'))  unlink($borrar);
             
-            $cantidadDeBorrados=$vProducto->BorrarUno(); 
+            $cantidadDeBorrados=$vMesa->BorrarUno(); 
 
             $objDelaRespuesta= new stdclass();
             $objDelaRespuesta->cantidad=$cantidadDeBorrados;
@@ -94,10 +108,9 @@ class productoApi extends producto
         }
         else{
 
-            return "No existe ningún producto con ese código de identificación";
+            return "No existe ninguna mesa con ese código";
         }
     }
-
 
 
     // public function RetirarAuto($request, $response, $args) {
@@ -138,8 +151,6 @@ class productoApi extends producto
     //         return $newResponse; 
             
     //     }
-
-
 
 }
 

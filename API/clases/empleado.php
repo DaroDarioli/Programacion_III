@@ -4,65 +4,84 @@ require_once 'AccesoDatos.php';
 
 class empleado
 {
-    public $id;
-    public $nombre;
-    public $apellido;
+    public $id_empleado;
+    public $nombre_completo;
+    public $id_rol;
+    public $fecha_ingreso;
+    public $fecha_egreso;
+    public $sueldo;
     public $clave;
-    public $email;
-    public $perfil;
-    public $foto;
 
-        public function __construct() {}
-  
+        public function __construct() {}  
 
         public function Insertar()
         {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-            $consulta =$objetoAccesoDato->RetornarConsulta("INSERT into empleados (id,nombre,apellido,clave,email,legajo,foto,perfil)values(:id,:nombre,:apellido,:clave,:email,:legajo,:foto,:perfil)");
-            $consulta->bindValue(':id', $this->id, PDO::PARAM_STR);
-            $consulta->bindValue(':nombre', $this->nombre, PDO::PARAM_STR);
-            $consulta->bindValue(':apellido', $this->apellido, PDO::PARAM_STR);
+            $consulta =$objetoAccesoDato->RetornarConsulta("INSERT into empleados 
+                  (id_empleado, nombre_completo,id_rol,fecha_ingreso,fecha_egreso,sueldo,clave)
+            values(:id_empleado,:nombre_completo,:id_rol,:fecha_ingreso,:fecha_egreso,:sueldo,:clave)");
+
+
+            $consulta->bindValue(':id_empleado', $this->id_empleado, PDO::PARAM_STR);
+            $consulta->bindValue(':nombre_completo', $this->nombre_completo, PDO::PARAM_STR);
+            $consulta->bindValue(':id_rol', $this->id_rol, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha_ingreso', $this->fecha_ingreso, PDO::PARAM_STR);
+            $consulta->bindValue(':fecha_egreso', $this->fecha_egreso, PDO::PARAM_STR);
+            $consulta->bindValue(':sueldo', $this->sueldo, PDO::PARAM_STR);
             $consulta->bindValue(':clave', $this->clave, PDO::PARAM_STR);
-            $consulta->bindValue(':email', $this->email, PDO::PARAM_STR);
-            $consulta->bindValue(':legajo', $this->legajo, PDO::PARAM_STR);
-            $consulta->bindValue(':foto', $this->foto, PDO::PARAM_STR);
-            $consulta->bindValue(':perfil', $this->perfil, PDO::PARAM_STR);
             
             $consulta->execute();		
             return $objetoAccesoDato->RetornarUltimoIdInsertado();
         }
 
+        
+        public static function TraerTodoLosEmpleados()
+        {
+            $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+            $consulta =$objetoAccesoDato->RetornarConsulta("SELECT `id_empleado`, `nombre_completo`, 'id_rol','fecha_ingreso' FROM `empleados`");
+            $consulta->execute();	
+            $consulta->setFetchMode(PDO::FETCH_ASSOC);
+            return $consulta->fetchAll();
+        }
 
-        public static function TraerUno($vMail,$vClave){
+
+        public static function TraerUno($vId,$vClave){
         
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-            $consulta =$objetoAccesoDato->RetornarConsulta("SELECT * FROM `empleados` WHERE  `email` = '$vMail' AND `clave`='$vClave' ");
+            $consulta =$objetoAccesoDato->RetornarConsulta("SELECT * FROM `empleados` WHERE  `id_empleado` = '$vId' AND `clave`='$vClave'");
             $consulta->execute();      
             $consulta->setFetchMode(PDO::FETCH_CLASS,"empleado"); 
             return $consulta->fetchAll();
 
         }
 
-        public static function TraerTodoLosEmpleados()
-        {
+        public static function TraerUnoId($vId){
+      
+           // return var_dump($vId);
+
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-            $consulta =$objetoAccesoDato->RetornarConsulta("SELECT * FROM `empleados`");
-            $consulta->execute();	
-            $consulta->setFetchMode(PDO::FETCH_ASSOC);
+            $consulta =$objetoAccesoDato->RetornarConsulta("SELECT * FROM `empleados` WHERE  `id_empleado` = '$vId'");
+            $consulta->execute();      
+            $consulta->setFetchMode(PDO::FETCH_CLASS,"empleado"); 
             return $consulta->fetchAll();
+
         }
+   
 
         public function ModificarUno()
         {
             $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
             $consulta =$objetoAccesoDato->RetornarConsulta("
                 update empleados
-                set clave ='$this->clave',
-                mail ='$this->mail',
-                turno ='$this->turno',
-                perfil ='$this->perfil'
-                WHERE id='$this->id'");
-            return $consulta->execute();
+                set                 
+                nombre_completo ='$this->nombre_completo',
+                id_rol ='$this->id_rol',
+                fecha_ingreso ='$this->fecha_ingreso',
+                fecha_egreso ='$this->fecha_egreso',
+                sueldo ='$this->sueldo',                
+                clave ='$this->clave'
+                WHERE id_empleado = '$this->id_empleado'");
+           return $consulta->execute();
 
         }
 
@@ -72,8 +91,8 @@ class empleado
             $consulta =$objetoAccesoDato->RetornarConsulta("
             delete 
             from empleados 				
-            WHERE mail =:mail");	
-            $consulta->bindValue(':mail',$this->mail, PDO::PARAM_INT);		
+            WHERE id_empleado =:id_empleado");	
+            $consulta->bindValue(':id_empleado',$this->id_empleado, PDO::PARAM_INT);		
             $consulta->execute();
             return $consulta->rowCount();
         }

@@ -2,10 +2,30 @@
 
 require_once 'AccesoDatos.php';
 require_once 'empleado.php';
-require_once 'AutentificadorJWT.php';
 
 class empleadoApi extends empleado
 { 
+    
+    public function CargarEmpleado($request, $response,$args){
+    
+        $emp = new empleado();
+        $vector = $request->getParsedBody();
+        $emp->id_empleado = $vector['id_empleado'];
+        $emp->nombre_completo = $vector['nombre_completo'];
+        $emp->id_rol = $vector['id_rol'];
+        $emp->fecha_ingreso = $vector['fecha_ingreso'];
+        $emp->sueldo = $vector['sueldo'];
+        $emp->clave = $vector['clave'];   
+        
+        if($vector['fecha_egreso'] = ""){
+            $emp->fecha_egreso = '0000-00-00';
+        }            
+        else{
+            $emp->fecha_egreso = $vector['fecha_egreso'];
+        }       
+        return $emp->Insertar();         
+    }
+
     public function TraerEmpleados($request, $response, $args) {
         
         $Empleados = empleado::TraerTodoLosEmpleados();        
@@ -13,99 +33,43 @@ class empleadoApi extends empleado
         return $newResponse;
     }  
     
-    public static function ValidarEmpleado($request, $response, $args)
-    {
+     public function TraerUnEmpleado($request, $response, $args) {   
+        
+        $objDelaRespuesta = new stdclass();  
+        $objDelaRespuesta->itsOK = false;              
+       
         $vector = $request->getParsedBody();
-        $vMail = $vector['email'];
+        $vId = $vector['id_empleado'];  
         $vClave = $vector['clave']; 
 
-        $var = empleado::TraerUno($vMail,$vClave);
-      //  var_dump($var[0]);
-      
-        if($var[0] != null){
-            
-            $token= AutentificadorJWT::CrearToken($var[0]); 
-            $newResponse = $response->withJson($token, 200); 
-            return $newResponse;
-        }
-        else{
-
-            return "No se puede crar token a empleado inexistente";
-        }
-
+        $var = empleado::TraerUno($vId,$vClave);      
            
-    }
-
-
-    public function TraerUnEmpleado($request, $response, $args) {   
-        
-        $vector = $request->getParsedBody();
-        $vMail = $vector['email'];
-        $vClave = $vector['clave'];
-       // var_dump($vector);
-
-        $resp->itsOk = false;
-        $resp->emp = new empleado();
-
-        $var = empleado::TraerUno($vMail,$vClave);      
-       
-        if($var != null){
-              
-            $resp->emp = $var[0]; 
-            $resp->itsOk = true;
-            $newResponse = $response->withJson($resp, 200);
-            
+        if($var != null){            
+             
+            $objDelaRespuesta->elEmpleado = new empleado();
+            $objDelaRespuesta->itsOK = true;
+            $objDelaRespuesta->elEmpleado = $var[0]; 
+            $objDelaRespuesta->token = AutentificadorJWT::CrearToken($var[0]);            
         }
-        else{
-
-            $newResponse = $response->withJson($resp->itsOk, 200);
-        }
+        $newResponse = $response->withJson($objDelaRespuesta, 200);        
         return $newResponse;
     }
 
-
-    public function CargarEmpleado($request, $response,$args){
-    
-        $emp = new empleado();
-        $vector = $request->getParsedBody();
-        $emp->id = $vector['id'];
-        $emp->nombre = $vector['nombre'];
-        $emp->apellido = $vector['apellido'];
-        $emp->legajo = $vector['legajo'];
-        $emp->clave = $vector['clave'];
-        $emp->email = $vector['email'];
-        $emp->perfil = $vector['perfil'];
-
-        //_________________Foto
-
-        $destino= './Fotos/';
-        $archivos = $request->getUploadedFiles();
-        $nombreAnterior=$archivos['foto']->getClientFilename();
-        $nombre = $emp->nombre;
-        $extension = explode(".",$nombreAnterior);
-        $extension = array_reverse($extension);
-        $archivos['foto']->moveTo($destino.$nombre.".".$extension[0]);
-        $camino = $destino.$nombre.".".$extension[0];
-
-        //______________________________________________//        
-                
-        $emp->foto = $camino;
-        return $emp->Insertar();         
-
-    }
-
-
-    /*
     public function ModificarEmpleado($request, $response,$args)
     {
         $emp = new empleado();
-        $vector  = $request->getParams('mail','clave','perfil','turno');
-        
-        $emp->id = $vector['id']; 
+        $vector = $request->getParams('id_empleado','nombre_completo','id_rol','fecha_ingreso','fecha_egreso','clave','sueldo');
+       
+
+        $emp->id_empleado = $vector['id_empleado'];
+        $emp->nombre_completo = $vector['nombre_completo'];
+        $emp->id_rol = $vector['id_rol'];
+        $emp->fecha_ingreso = $vector['fecha_ingreso'];
+        $emp->fecha_egreso = $vector['fecha_egreso'];
+        $emp->sueldo = $vector['sueldo'];
         $emp->clave = $vector['clave'];
-        $emp->mail = $vector['mail'];
-        $emp->turno = $vector['turno'];
-        $emp->perfil = $vector['perfil'];      
+
+      //  return var_dump($emp);
 
         //____________________//
 	   	$resultado =$emp->ModificarUno();
@@ -115,13 +79,15 @@ class empleadoApi extends empleado
 	    return $response->withJson($responseObj, 200);	
     }
 
+
     public function BorrarEmpleado($request, $response, $args) {
         
             $emp = new empleado();
-            $vMail = $args['mail'];
-
+            $vId = $args['id'];
         
-            $var = empleado::TraerUno($vMail);
+
+         //   return var_dump($vId);
+            $var = empleado::TraerUnoId($vId);
             
             if($var != null){
                    
@@ -141,11 +107,10 @@ class empleadoApi extends empleado
                 $newResponse = $response->withJson($objDelaRespuesta, 200);  
                 return $newResponse; 
             }
-            else{
-                
-                return "No existe ningún empleado con ese mail";
+            else{                
+                return "No existe ningún empleado con ese id";
             }
-        }*/
+        }
 
 
 }
